@@ -1,0 +1,6 @@
+.coverage
+venv
+instance
+service_discovery.egg-info
+*__pycache__
+*.pyc
