@@ -16,4 +16,6 @@ RUN export FLASK_APP service_discovery
 
 RUN flask init-db
 
+RUN pytest
+
 CMD . bin/startup.sh
