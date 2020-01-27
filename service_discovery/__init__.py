@@ -19,12 +19,12 @@ TODOS
 def create_app(test_config=None):
 
     app = Flask(__name__, instance_relative_config=True)
-    service_name = '127.0.0.1'
+    service_name = '0.0.0.0'
     port = '8000'
     app.config.from_mapping(
         APP_NAME='service-discovery',
         PORT=port,
-        SERVER_NAME="{}:{}".format(service_name, port),
+        SERVICE_NAME="{}:{}".format(service_name, port),
         SERVICE_PORT=port,
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'service_discovery.sqlite'),
