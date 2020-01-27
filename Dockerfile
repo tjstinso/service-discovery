@@ -14,7 +14,9 @@ RUN pip3 install --no-cache-dir -r requirements.txt && \
 export LC_ALL=C.UTF-8 && \
 export LANG=C.UTF-8 && \
 export FLASK_APP=service_discovery && \
+python3 -m pytest && \
 flask init-db
+
 
 EXPOSE 8000
 
