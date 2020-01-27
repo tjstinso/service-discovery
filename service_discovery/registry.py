@@ -64,7 +64,7 @@ def get_ip():
 @bp.route('/perform_update')
 def perform_update():
     neighbors, status = get_registry()
-    neighbor = choice(list(addresses))
+    neighbor = choice(list(neighbors))
     ip = requests.get('http://{}/registry/get_ip'.format(neighbor)).text
     prefix = "http://{}/registry/register_".format(neighbor)
     requests.post(prefix + 'instance', json={

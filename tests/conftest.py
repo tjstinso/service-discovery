@@ -43,7 +43,7 @@ class Registry(object):
         return self._client.get('/registry/list')
     
     def register(self, app_name, address, last_update):
-        return self._client.post('/registry/register_instance', data = {
+        return self._client.post('/registry/register_instance', json={
             'app_name': app_name,
             'address': address,
             'last_update': last_update

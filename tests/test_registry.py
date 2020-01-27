@@ -6,23 +6,16 @@ from service_discovery.db import get_db
 # INSERT INTO registry (address, app_name, last_update)
 # VALUES ('0:0', 'self', 0), ('1:1', 'other', 0);
 
-def before(app):
-    with app.app_context():
-        db = get_db()
-        res = db.execute('DELETE FROM registry WHERE address = "127.0.0.1:8000"')
-        db.close()
-
-
 def test_get_registry(registry):
     data = registry.list_entries().get_json()
     assert '0:0' in data
     assert '1:1' in data
 
-@pytest.mark.parametrize(('name', 'address', 'last'), (
+@pytest.mark.parametrize(('name', 'address', 'last_update'), (
     ('test1', '127.0.0.1:5000', 0),
 ))
-def test_register_instance(registry, app, name, address, last):
-    registry.register(name, address, last)
+def test_register_instance(registry, app, name, address, last_update):
+    registry.register(name, address, last_update)
 
     with app.app_context():
         db = get_db()
@@ -45,26 +38,23 @@ def test_register_all(registry, monkeypatch, body):
 
 def test_perform_update(registry, monkeypatch, app):
     # before(app)
-    out = []
-    def fake_requests(url, data=None, json=None):
-        out.append((url, data, json))
+    out = {}
+    def fake_requests(url, json=None):
+        for i in [j for j in json if '1:1' in j or '0:0' in j]:
+            out[i] = json[i]
+    def fake_get_ip(url):
+        class Text:
+            text = '127.0.0.1'
+        return Text()
     monkeypatch.setattr('requests.post', fake_requests)
+    monkeypatch.setattr('requests.get', fake_get_ip)
     registry.perform_update()
-    register_self = out.pop(0) # ignore register single instance
-    assert '/registry/register_instance' in register_self[0]
-    assert register_self[1]['address'] == '127.0.0.1:{}'.format(app.config['PORT'])
-    assert register_self[1]['app_name'] == app.config['APP_NAME']
-    assert type(register_self[1]['last_update']) is int
 
     # compare urls
     import re
-    for req in out:
-        assert 'http://' in req[0] and '/registry/register_all' in req[0]
-        assert req[1] == None
-        for data in [i[2] for i in out]:
-            for address in [i for i in data if '127' not in i]:
-                address_pattern = re.compile('(1:1|0:0)')
-                name_pattern = re.compile('(self|other)')
-                assert address_pattern.match(address)
-                assert name_pattern.match(data[address]['app_name'])
-                assert data[address]['last_update'] == 0
+    for address in out:
+        address_pattern = re.compile('(1:1|0:0)')
+        name_pattern = re.compile('(self|other)')
+        assert address_pattern.match(address)
+        assert name_pattern.match(out[address]['app_name'])
+        assert out[address]['last_update'] == 0
