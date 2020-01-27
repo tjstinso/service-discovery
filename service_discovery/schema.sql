@@ -7,4 +7,6 @@ CREATE TABLE registry (
 );
 
 INSERT INTO registry (address, app_name, last_update)
-VALUES ("127.0.0.1:8000", "service-discovery", 0);
+VALUES
+    ("172.17.0.2:8000", "service-discovery", 1),
+    ("172.17.0.3:8000", "service-discovery", 1);
