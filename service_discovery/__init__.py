@@ -3,6 +3,7 @@ import sys
 from flask import Flask
 from . import db
 from . import registry
+from . import config
 
 """
 TODOS
@@ -19,22 +20,14 @@ TODOS
 def create_app(test_config=None):
 
     app = Flask(__name__, instance_relative_config=True)
-    service_name = '0.0.0.0'
-    port = '8000'
+
+    app.config.from_object(config.Config)
+    if test_config:
+        app.config.from_mapping(test_config)
+
     app.config.from_mapping(
-        APP_NAME='service-discovery',
-        PORT=port,
-        SERVICE_NAME="{}:{}".format(service_name, port),
-        SERVICE_PORT=port,
-        SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'service_discovery.sqlite'),
     )
-
-
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        app.config.from_mapping(test_config)
 
     try:
         os.makedirs(app.instance_path)
