@@ -65,7 +65,11 @@ def get_ip():
 def perform_update():
     neighbors, status = get_registry()
     neighbor = choice(list(neighbors))
-    ip = requests.get('http://{}/registry/get_ip'.format(neighbor)).text
+    if 'ip' not in g: 
+        ip = requests.get('http://{}/registry/get_ip'.format(neighbor)).text
+        g.ip = ip
+    else:
+        ip = g.ip
     prefix = "http://{}/registry/register_".format(neighbor)
     requests.post(prefix + 'instance', json={
         'app_name': current_app.config['APP_NAME'], 'address': "{}:{}".format(ip, current_app.config['PORT']), 'last_update': int(time.time())
