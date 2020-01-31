@@ -4,3 +4,14 @@ instance
 service_discovery.egg-info
 *__pycache__
 *.pyc
+share/
+var/
+lib*
+bin/py*
+bin/gunicorn
+bin/flask
+bin/easy*
+bin/char*
+bin/acti*
+*pip*
+pyvenv*
