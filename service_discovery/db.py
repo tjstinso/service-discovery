@@ -23,6 +23,11 @@ def init_db():
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
+    for address in current_app.config['SEED_SERVERS']:
+        db.execute("INSERT INTO registry (app_name, address, last_update) VALUES (?, ?, ?)",
+                     (current_app.config['APP_NAME'], address, 1))
+    db.commit()
+
 @click.command('init-db')
 @with_appcontext
 def init_db_command():

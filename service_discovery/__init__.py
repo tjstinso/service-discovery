@@ -41,3 +41,5 @@ def create_app(test_config=None):
     db.init_app(app)
     app.register_blueprint(registry.bp)
     return app
+
+
