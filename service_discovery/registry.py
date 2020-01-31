@@ -71,9 +71,8 @@ def perform_update():
     else:
         ip = g.ip
     prefix = "http://{}/registry/register_".format(neighbor)
-    requests.post(prefix + 'instance', json={
-        'app_name': current_app.config['APP_NAME'], 'address': "{}:{}".format(ip, current_app.config['PORT']), 'last_update': int(time.time())
-        }
-    )
+    if ip not in neighbors:
+        neighbors[ip] = { 'app_name': current_app.config['APP_NAME'] }
+    neighbors[ip]['last_update'] = int(time.time())
     requests.post(prefix + 'all', json=neighbors)
     return 'success', 200
